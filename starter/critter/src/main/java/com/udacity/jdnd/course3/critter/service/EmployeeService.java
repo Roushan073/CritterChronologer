@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Transactional
 public class EmployeeService {
 
     @Autowired
@@ -27,7 +28,9 @@ public class EmployeeService {
     @Autowired
     ScheduleService scheduleService;
 
-    @Transactional
+    /**
+     * Given a Employee DTO, create the Employee and return the Employee details
+     */
     public EmployeeDTO saveEmployee(EmployeeDTO employeeDTO) {
         Employee employee = employeeDTOtoEntity(employeeDTO);
         Long employeeId = employeeRepository.save(employee).getId();
@@ -35,20 +38,32 @@ public class EmployeeService {
         return employeeDTO;
     }
 
+    /**
+     * Find all existing Employees
+     */
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
+    /**
+     * Find employee by employeeId
+     */
     public EmployeeDTO getEmployeeById(Long employeeId) {
         return employeeEntityToDTO(employeeRepository.findEmployeeById(employeeId));
     }
 
+    /**
+     * Updating employee availability
+     */
     public void setAvailability(Set<DayOfWeek> daysAvailable, long employeeId) {
         Employee employee = employeeRepository.findEmployeeById(employeeId);
         employee.setDaysAvailable(daysAvailable);
         employeeRepository.save(employee);
     }
 
+    /**
+     * Find employees suited for certain services and available for certain days
+     */
     public List<EmployeeDTO> findEmployeesForService(EmployeeRequestDTO employeeReqDTO) {
         DayOfWeek dayOfWeek = employeeReqDTO.getDate().getDayOfWeek();
         Set<EmployeeSkill> employeeSkills = employeeReqDTO.getSkills();
@@ -60,6 +75,8 @@ public class EmployeeService {
             Set<EmployeeSkill> intersectionSkills = new HashSet<>();
             intersectionSkills.addAll(employeeSkills);
             intersectionSkills.retainAll(employee.getSkills());
+
+            // Check if employee is available on given days and posses certain skills
             if(employee.getDaysAvailable().contains(dayOfWeek) && (intersectionSkills.size() == employeeSkills.size())) {
                 employeeDTOS.add(employeeEntityToDTO(employee));
             }
@@ -68,6 +85,9 @@ public class EmployeeService {
         return employeeDTOS;
     }
 
+    /**
+     * Find all saved schedules for the employee
+     */
     public List<ScheduleDTO> getScheduleForEmployee(long employeeId) {
         Employee employee = employeeRepository.findEmployeeById(employeeId);
         List<ScheduleDTO> scheduleDTOS = new ArrayList<>();
@@ -77,12 +97,18 @@ public class EmployeeService {
         return scheduleDTOS;
     }
 
+    /**
+     * Copy Employee DTO matching properties to Employee Entity
+     */
     private Employee employeeDTOtoEntity(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         return employee;
     }
 
+    /**
+     * Copy Employee Entity matching properties to Employee DTO
+     */
     private EmployeeDTO employeeEntityToDTO(Employee employee) {
         EmployeeDTO employeeDTO = new EmployeeDTO();
         BeanUtils.copyProperties(employee, employeeDTO);

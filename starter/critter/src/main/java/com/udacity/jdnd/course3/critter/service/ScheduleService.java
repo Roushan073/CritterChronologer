@@ -9,6 +9,7 @@ import com.udacity.jdnd.course3.critter.schedule.ScheduleDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ScheduleService {
 
     @Autowired
@@ -30,6 +32,9 @@ public class ScheduleService {
     @Autowired
     EmployeeRepository employeeRepository;
 
+    /**
+     * Given a Schedule DTO, create the schedule and return the created schedule details
+     */
     public ScheduleDTO createSchedule(ScheduleDTO scheduleDTO) {
         List<User> employees = new ArrayList<>();
         List<Pet> pets = new ArrayList<>();
@@ -39,7 +44,7 @@ public class ScheduleService {
             pets.add(petRepository.findPetById(petId));
         }
 
-        // Find All employee from employeeId
+        // Find all employees from employeeId
         for(Long employeeId: scheduleDTO.getEmployeeIds()) {
             employees.add(employeeRepository.findEmployeeById(employeeId));
         }
@@ -50,8 +55,6 @@ public class ScheduleService {
         schedule.setUsers(employees);
 
         Long scheduleId = scheduleRepository.save(schedule).getId();
-        // This is required otherwise while setting this schedule to pet/employee it will have no Id (0)
-        // and throw exception
         schedule.setId(scheduleId);
         scheduleDTO.setId(scheduleId);
 
@@ -68,7 +71,7 @@ public class ScheduleService {
             petRepository.save(pet);
         }
 
-        // Updating schedule to Employees
+        // Updating schedule to Employees (Users)
         for(User employee: employees) {
             List<Schedule> empSchedules = Optional.ofNullable(employee.getSchedules()).orElse(Collections.emptyList());
             if(empSchedules.size() > 0) {
@@ -84,6 +87,9 @@ public class ScheduleService {
         return scheduleDTO;
     }
 
+    /**
+     * Find all existing Schedules
+     */
     public List<ScheduleDTO> getAllSchedules() {
         List<ScheduleDTO> scheduleDTOS = new ArrayList<>();
         for(Schedule schedule: scheduleRepository.findAll()) {
@@ -92,12 +98,18 @@ public class ScheduleService {
         return scheduleDTOS;
     }
 
+    /**
+     * Copy Schedule DTO matching properties to Schedule Entity
+     */
     public Schedule scheduleDTOtoEntity(ScheduleDTO scheduleDTO) {
         Schedule schedule = new Schedule();
         BeanUtils.copyProperties(scheduleDTO, schedule);
         return schedule;
     }
 
+    /**
+     * Copy Schedule Entity matching properties to Schedule DTO
+     */
     public ScheduleDTO scheduleEntityToDTO(Schedule schedule) {
         ScheduleDTO scheduleDTO = new ScheduleDTO();
         BeanUtils.copyProperties(schedule, scheduleDTO);
@@ -105,6 +117,10 @@ public class ScheduleService {
         List<Long> petIds = new ArrayList<>();
         List<Long> empIds = new ArrayList<>();
 
+        /**
+         * As Schedule DTO contains only Ids of Pet and User, we need to extract them from
+         * User and Pet, and assign them to Schedule DTO
+         */
         for(Pet pet: schedule.getPets()) {
             petIds.add(pet.getId());
         }

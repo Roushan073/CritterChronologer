@@ -11,7 +11,7 @@ public class CustomerDTO {
     private String name;
     private String phoneNumber;
     private String notes;
-    private List<Long> petIds;  // It shows Customer (User) :: Pet -> OneToMany
+    private List<Long> petIds;
 
     public long getId() {
         return id;
