@@ -19,13 +19,6 @@ public class Employee extends User {
     @ElementCollection
     private Set<DayOfWeek> daysAvailable;
 
-    @ManyToMany
-    @JoinTable(
-            joinColumns = @JoinColumn(name = "employee_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "schedule_id", referencedColumnName = "id"))
-    @JsonIgnore
-    private List<Schedule> schedules;
-
     public Set<EmployeeSkill> getSkills() {
         return skills;
     }
@@ -42,11 +35,4 @@ public class Employee extends User {
         this.daysAvailable = daysAvailable;
     }
 
-    public List<Schedule> getSchedules() {
-        return schedules;
-    }
-
-    public void setSchedules(List<Schedule> schedules) {
-        this.schedules = schedules;
-    }
 }

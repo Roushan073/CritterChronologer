@@ -2,9 +2,11 @@ package com.udacity.jdnd.course3.critter.service;
 
 import com.udacity.jdnd.course3.critter.entity.Customer;
 import com.udacity.jdnd.course3.critter.entity.Pet;
+import com.udacity.jdnd.course3.critter.entity.Schedule;
 import com.udacity.jdnd.course3.critter.pet.PetDTO;
 import com.udacity.jdnd.course3.critter.repository.CustomerRepository;
 import com.udacity.jdnd.course3.critter.repository.PetRepository;
+import com.udacity.jdnd.course3.critter.schedule.ScheduleDTO;
 import com.udacity.jdnd.course3.critter.user.CustomerDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class CustomerService {
 
     @Autowired
     PetService petService;
+
+    @Autowired
+    ScheduleService scheduleService;
 
     // Saving a customer
     @Transactional
@@ -75,6 +80,19 @@ public class CustomerService {
         PetDTO petDTO = petService.getPetById(petId);
         return getCustomerById(petDTO.getOwnerId());
 
+    }
+
+    // returns all saved schedules for any pets belonging to the owner with ownerId: customerId
+    public List<ScheduleDTO> getScheduleForCustomer(long customerId) {
+        Customer customer = customerRepository.findCustomerById(customerId);
+        List<Pet> customerPets = Optional.ofNullable(customer.getPets()).orElse(Collections.emptyList());
+        List<ScheduleDTO> scheduleDTOS = new ArrayList<>();
+
+        for(Pet pet: customerPets) {
+            scheduleDTOS.addAll(petService.getScheduleForPet(pet.getId()));
+        }
+
+        return scheduleDTOS;
     }
 
     public Customer customerDTOtoEntity(CustomerDTO customerDTO) {
