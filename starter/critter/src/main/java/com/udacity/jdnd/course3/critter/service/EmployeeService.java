@@ -1,7 +1,9 @@
 package com.udacity.jdnd.course3.critter.service;
 
 import com.udacity.jdnd.course3.critter.entity.Employee;
+import com.udacity.jdnd.course3.critter.entity.Schedule;
 import com.udacity.jdnd.course3.critter.repository.EmployeeRepository;
+import com.udacity.jdnd.course3.critter.schedule.ScheduleDTO;
 import com.udacity.jdnd.course3.critter.user.EmployeeDTO;
 import com.udacity.jdnd.course3.critter.user.EmployeeRequestDTO;
 import com.udacity.jdnd.course3.critter.user.EmployeeSkill;
@@ -21,6 +23,9 @@ public class EmployeeService {
 
     @Autowired
     EmployeeRepository employeeRepository;
+
+    @Autowired
+    ScheduleService scheduleService;
 
     @Transactional
     public EmployeeDTO saveEmployee(EmployeeDTO employeeDTO) {
@@ -61,7 +66,15 @@ public class EmployeeService {
         }
 
         return employeeDTOS;
+    }
 
+    public List<ScheduleDTO> getScheduleForEmployee(long employeeId) {
+        Employee employee = employeeRepository.findEmployeeById(employeeId);
+        List<ScheduleDTO> scheduleDTOS = new ArrayList<>();
+        for(Schedule schedule: employee.getSchedules()) {
+            scheduleDTOS.add(scheduleService.scheduleEntityToDTO(schedule));
+        }
+        return scheduleDTOS;
     }
 
     private Employee employeeDTOtoEntity(EmployeeDTO employeeDTO) {

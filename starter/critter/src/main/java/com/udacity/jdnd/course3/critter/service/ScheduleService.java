@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.service;
 
+import com.udacity.jdnd.course3.critter.entity.Employee;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.entity.Schedule;
 import com.udacity.jdnd.course3.critter.entity.User;
@@ -13,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ScheduleService {
@@ -31,7 +34,7 @@ public class ScheduleService {
     EmployeeRepository employeeRepository;
 
     public ScheduleDTO createSchedule(ScheduleDTO scheduleDTO) {
-        List<User> users = new ArrayList<>();
+        List<Employee> employees = new ArrayList<>();
         List<Pet> pets = new ArrayList<>();
 
         // Find all pets from petId
@@ -41,16 +44,45 @@ public class ScheduleService {
 
         // Find All employee from employeeId
         for(Long employeeId: scheduleDTO.getEmployeeIds()) {
-            users.add(employeeRepository.findEmployeeById(employeeId));
+            employees.add(employeeRepository.findEmployeeById(employeeId));
         }
 
         // Set pet and employee to schedule
         Schedule schedule = scheduleDTOtoEntity(scheduleDTO);
         schedule.setPets(pets);
-        schedule.setUsers(users);
+        schedule.setEmployees(employees);
 
         Long scheduleId = scheduleRepository.save(schedule).getId();
+        // This is required otherwise while setting this schedule to pet/employee it will have no Id (0)
+        // and throw exception
+        schedule.setId(scheduleId);
         scheduleDTO.setId(scheduleId);
+
+        // Updating schedule to pets
+        for(Pet pet: pets) {
+            List<Schedule> petSchedules = Optional.ofNullable(pet.getSchedules()).orElse(Collections.emptyList());
+            if(petSchedules.size() > 0) {
+                pet.getSchedules().add(schedule);
+            } else {
+                List<Schedule> schedules = new ArrayList<>();
+                schedules.add(schedule);
+                pet.setSchedules(schedules);
+            }
+            petRepository.save(pet);
+        }
+
+        // Updating schedule to Employees
+        for(Employee employee: employees) {
+            List<Schedule> empSchedules = Optional.ofNullable(employee.getSchedules()).orElse(Collections.emptyList());
+            if(empSchedules.size() > 0) {
+                employee.getSchedules().add(schedule);
+            } else {
+                List<Schedule> schedules = new ArrayList<>();
+                schedules.add(schedule);
+                employee.setSchedules(schedules);
+            }
+            employeeRepository.save(employee);
+        }
 
         return scheduleDTO;
     }
@@ -58,21 +90,7 @@ public class ScheduleService {
     public List<ScheduleDTO> getAllSchedules() {
         List<ScheduleDTO> scheduleDTOS = new ArrayList<>();
         for(Schedule schedule: scheduleRepository.findAll()) {
-            ScheduleDTO scheduleDTO = scheduleEntityToDTO(schedule);
-            List<Long> petIds = new ArrayList<>();
-            List<Long> empIds = new ArrayList<>();
-
-            for(Pet pet: schedule.getPets()) {
-                petIds.add(pet.getId());
-            }
-
-            for(User user: schedule.getUsers()) {
-                empIds.add(user.getId());
-            }
-
-            scheduleDTO.setPetIds(petIds);
-            scheduleDTO.setEmployeeIds(empIds);
-            scheduleDTOS.add(scheduleDTO);
+            scheduleDTOS.add(scheduleEntityToDTO(schedule));
         }
         return scheduleDTOS;
     }
@@ -86,6 +104,21 @@ public class ScheduleService {
     public ScheduleDTO scheduleEntityToDTO(Schedule schedule) {
         ScheduleDTO scheduleDTO = new ScheduleDTO();
         BeanUtils.copyProperties(schedule, scheduleDTO);
+
+        List<Long> petIds = new ArrayList<>();
+        List<Long> empIds = new ArrayList<>();
+
+        for(Pet pet: schedule.getPets()) {
+            petIds.add(pet.getId());
+        }
+
+        for(Employee employee: schedule.getEmployees()) {
+            empIds.add(employee.getId());
+        }
+
+        scheduleDTO.setPetIds(petIds);
+        scheduleDTO.setEmployeeIds(empIds);
+
         return scheduleDTO;
     }
 }

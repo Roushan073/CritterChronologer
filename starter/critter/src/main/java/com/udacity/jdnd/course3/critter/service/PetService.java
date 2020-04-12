@@ -2,9 +2,11 @@ package com.udacity.jdnd.course3.critter.service;
 
 import com.udacity.jdnd.course3.critter.entity.Customer;
 import com.udacity.jdnd.course3.critter.entity.Pet;
+import com.udacity.jdnd.course3.critter.entity.Schedule;
 import com.udacity.jdnd.course3.critter.pet.PetDTO;
 import com.udacity.jdnd.course3.critter.repository.CustomerRepository;
 import com.udacity.jdnd.course3.critter.repository.PetRepository;
+import com.udacity.jdnd.course3.critter.schedule.ScheduleDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class PetService {
 
     @Autowired
     CustomerService customerService;
+
+    @Autowired
+    ScheduleService scheduleService;
 
     @Autowired
     CustomerRepository customerRepository;
@@ -103,6 +108,15 @@ public class PetService {
             petDTOS.add(petDTO);
         }
         return petDTOS;
+    }
+
+    public List<ScheduleDTO> getScheduleForPet(long petId) {
+        Pet pet = petRepository.findPetById(petId);
+        List<ScheduleDTO> scheduleDTOS = new ArrayList<>();
+        for(Schedule schedule: pet.getSchedules()) {
+            scheduleDTOS.add(scheduleService.scheduleEntityToDTO(schedule));
+        }
+        return scheduleDTOS;
     }
 
     public Pet petDTOtoEntity(PetDTO petDTO) {

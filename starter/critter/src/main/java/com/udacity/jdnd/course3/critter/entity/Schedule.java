@@ -15,11 +15,11 @@ public class Schedule {
     @GeneratedValue
     private Long id;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "schedules")
     @JsonIgnore
-    private List<User> users;
+    private List<Employee> employees;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "schedules")
     @JsonIgnore
     private List<Pet> pets;
 
@@ -36,12 +36,12 @@ public class Schedule {
         this.id = id;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public List<Employee> getEmployees() {
+        return employees;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
     }
 
     public List<Pet> getPets() {

@@ -24,8 +24,10 @@ public class Pet {
     @JsonIgnore
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "schedule_id")
+    @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "pet_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "schedule_id", referencedColumnName = "id"))
     @JsonIgnore
     private List<Schedule> schedules;
 
@@ -75,5 +77,13 @@ public class Pet {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
     }
 }

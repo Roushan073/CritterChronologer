@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -43,7 +45,10 @@ public class CustomerService {
 
         for(Customer customer: customerRepository.findAll()) {
             List<Long> petIds = new ArrayList<>();
-            for(Pet pet: customer.getPets()) {
+
+            // To handle NullPointerException while running test suite
+            List<Pet> customerPets = Optional.ofNullable(customer.getPets()).orElse(Collections.emptyList());
+            for(Pet pet: customerPets) {
                 petIds.add(pet.getId());
             }
 
