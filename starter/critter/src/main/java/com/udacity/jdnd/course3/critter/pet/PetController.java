@@ -24,6 +24,9 @@ public class PetController {
         Pet reqPet = petDTOtoEntity(petDTO);
         Long ownerId = petDTO.getOwnerId();
         Long petId = petService.savePet(reqPet, ownerId);
+        if(petId == 0) {
+            return null;
+        }
         petDTO.setId(petId);
         return petDTO;
     }
@@ -32,7 +35,11 @@ public class PetController {
     public PetDTO savePet(@RequestBody PetDTO petDTO, @PathVariable Long ownerId) {
         Pet reqPet = petDTOtoEntity(petDTO);
         Long petId = petService.savePet(reqPet, ownerId);
+        if(petId == 0) {
+            return null;
+        }
         petDTO.setId(petId);
+        petDTO.setOwnerId(ownerId);
         return petDTO;
     }
 

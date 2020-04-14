@@ -69,4 +69,20 @@ public class Pet {
     public void setSchedules(List<Schedule> schedules) {
         this.schedules = schedules;
     }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 }

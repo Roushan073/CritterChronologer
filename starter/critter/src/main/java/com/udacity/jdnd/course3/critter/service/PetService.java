@@ -31,6 +31,9 @@ public class PetService {
 
         // Get Customer by ownerId
         Customer customer = customerRepository.findCustomerById(ownerId);
+        if(customer == null) {
+            return 0;
+        }
 
         // Save Pet
         pet.setCustomer(customer);
@@ -83,6 +86,9 @@ public class PetService {
      */
     public List<Schedule> getScheduleForPet(long petId) {
         Pet pet = petRepository.findPetById(petId);
+        if(pet == null) {
+            return Collections.emptyList();
+        }
         return pet.getSchedules();
     }
 }

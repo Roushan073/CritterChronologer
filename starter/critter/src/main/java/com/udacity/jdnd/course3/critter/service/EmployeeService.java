@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -81,6 +78,9 @@ public class EmployeeService {
      */
     public List<Schedule> getScheduleForEmployee(long employeeId) {
         Employee employee = employeeRepository.findEmployeeById(employeeId);
+        if(employee == null) {
+            return Collections.emptyList();
+        }
         return employee.getSchedules();
     }
 }

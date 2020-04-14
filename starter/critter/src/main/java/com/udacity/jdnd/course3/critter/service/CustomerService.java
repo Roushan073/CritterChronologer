@@ -57,6 +57,9 @@ public class CustomerService {
      */
     public List<Schedule> getScheduleForCustomer(long customerId) {
         Customer customer = customerRepository.findCustomerById(customerId);
+        if(customer == null) {
+            return Collections.emptyList();
+        }
         List<Pet> customerPets = Optional.ofNullable(customer.getPets()).orElse(Collections.emptyList());
         List<Schedule> schedules = new ArrayList<>();
 
