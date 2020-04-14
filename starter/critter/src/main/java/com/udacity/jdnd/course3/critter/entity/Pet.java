@@ -5,13 +5,12 @@ import com.udacity.jdnd.course3.critter.pet.PetType;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Pet {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private PetType type;
@@ -61,22 +60,6 @@ public class Pet {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
     }
 
     public List<Schedule> getSchedules() {

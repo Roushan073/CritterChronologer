@@ -12,7 +12,7 @@ import java.util.Set;
 public class Schedule {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "schedules")
@@ -24,6 +24,14 @@ public class Schedule {
     private List<Pet> pets;
 
     private LocalDate date;
+
+    public Set<EmployeeSkill> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(Set<EmployeeSkill> activities) {
+        this.activities = activities;
+    }
 
     @ElementCollection
     private Set<EmployeeSkill> activities;
@@ -58,13 +66,5 @@ public class Schedule {
 
     public void setDate(LocalDate date) {
         this.date = date;
-    }
-
-    public Set<EmployeeSkill> getActivities() {
-        return activities;
-    }
-
-    public void setActivities(Set<EmployeeSkill> activities) {
-        this.activities = activities;
     }
 }

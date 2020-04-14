@@ -1,12 +1,12 @@
 package com.udacity.jdnd.course3.critter.service;
 
-import com.udacity.jdnd.course3.critter.entity.Employee;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.entity.Schedule;
 import com.udacity.jdnd.course3.critter.entity.User;
-import com.udacity.jdnd.course3.critter.repository.*;
-import com.udacity.jdnd.course3.critter.schedule.ScheduleDTO;
-import org.springframework.beans.BeanUtils;
+import com.udacity.jdnd.course3.critter.repository.EmployeeRepository;
+import com.udacity.jdnd.course3.critter.repository.PetRepository;
+import com.udacity.jdnd.course3.critter.repository.ScheduleRepository;
+import com.udacity.jdnd.course3.critter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,30 +33,28 @@ public class ScheduleService {
     EmployeeRepository employeeRepository;
 
     /**
-     * Given a Schedule DTO, create the schedule and return the created schedule details
+     * Given a Schedule, create the schedule and return the created schedule details
      */
-    public ScheduleDTO createSchedule(ScheduleDTO scheduleDTO) {
+    public long createSchedule(Schedule schedule, List<Long> petIds, List<Long> employeeIds) {
         List<User> employees = new ArrayList<>();
         List<Pet> pets = new ArrayList<>();
 
         // Find all pets from petId
-        for(Long petId: scheduleDTO.getPetIds()) {
+        for(Long petId: petIds) {
             pets.add(petRepository.findPetById(petId));
         }
 
         // Find all employees from employeeId
-        for(Long employeeId: scheduleDTO.getEmployeeIds()) {
+        for(Long employeeId: employeeIds) {
             employees.add(employeeRepository.findEmployeeById(employeeId));
         }
 
         // Set pet and employee to schedule
-        Schedule schedule = scheduleDTOtoEntity(scheduleDTO);
         schedule.setPets(pets);
         schedule.setUsers(employees);
 
         Long scheduleId = scheduleRepository.save(schedule).getId();
         schedule.setId(scheduleId);
-        scheduleDTO.setId(scheduleId);
 
         // Updating schedule to pets
         for(Pet pet: pets) {
@@ -84,54 +82,13 @@ public class ScheduleService {
             userRepository.save(employee);
         }
 
-        return scheduleDTO;
+        return scheduleId;
     }
 
     /**
      * Find all existing Schedules
      */
-    public List<ScheduleDTO> getAllSchedules() {
-        List<ScheduleDTO> scheduleDTOS = new ArrayList<>();
-        for(Schedule schedule: scheduleRepository.findAll()) {
-            scheduleDTOS.add(scheduleEntityToDTO(schedule));
-        }
-        return scheduleDTOS;
-    }
-
-    /**
-     * Copy Schedule DTO matching properties to Schedule Entity
-     */
-    public Schedule scheduleDTOtoEntity(ScheduleDTO scheduleDTO) {
-        Schedule schedule = new Schedule();
-        BeanUtils.copyProperties(scheduleDTO, schedule);
-        return schedule;
-    }
-
-    /**
-     * Copy Schedule Entity matching properties to Schedule DTO
-     */
-    public ScheduleDTO scheduleEntityToDTO(Schedule schedule) {
-        ScheduleDTO scheduleDTO = new ScheduleDTO();
-        BeanUtils.copyProperties(schedule, scheduleDTO);
-
-        List<Long> petIds = new ArrayList<>();
-        List<Long> empIds = new ArrayList<>();
-
-        /**
-         * As Schedule DTO contains only Ids of Pet and User, we need to extract them from
-         * User and Pet, and assign them to Schedule DTO
-         */
-        for(Pet pet: schedule.getPets()) {
-            petIds.add(pet.getId());
-        }
-
-        for(User employee: schedule.getUsers()) {
-            empIds.add(employee.getId());
-        }
-
-        scheduleDTO.setPetIds(petIds);
-        scheduleDTO.setEmployeeIds(empIds);
-
-        return scheduleDTO;
+    public List<Schedule> getAllSchedules() {
+        return scheduleRepository.findAll();
     }
 }

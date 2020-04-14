@@ -1,12 +1,11 @@
 package com.udacity.jdnd.course3.critter.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.udacity.jdnd.course3.critter.user.EmployeeSkill;
 
-import javax.persistence.*;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 import java.time.DayOfWeek;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity

@@ -2,9 +2,11 @@ package com.udacity.jdnd.course3.critter.pet;
 
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.service.PetService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,27 +21,67 @@ public class PetController {
 
     @PostMapping
     public PetDTO savePet(@RequestBody PetDTO petDTO) {
-        return petService.savePet(petDTO);
+        Pet reqPet = petDTOtoEntity(petDTO);
+        Long ownerId = petDTO.getOwnerId();
+        Long petId = petService.savePet(reqPet, ownerId);
+        petDTO.setId(petId);
+        return petDTO;
     }
 
     @PostMapping("/{ownerId}")
     public PetDTO savePet(@RequestBody PetDTO petDTO, @PathVariable Long ownerId) {
-        petDTO.setOwnerId(ownerId);
-        return petService.savePet(petDTO);
+        Pet reqPet = petDTOtoEntity(petDTO);
+        Long petId = petService.savePet(reqPet, ownerId);
+        petDTO.setId(petId);
+        return petDTO;
     }
 
     @GetMapping("/{petId}")
     public PetDTO getPet(@PathVariable long petId) {
-        return petService.getPetById(petId);
+        return petEntityToDTO(petService.getPetById(petId));
     }
 
     @GetMapping
     public List<PetDTO> getPets(){
-        return petService.getPets();
+        List<PetDTO> petDTOS = new ArrayList<>();
+        for (Pet pet: petService.getPets()) {
+            petDTOS.add(petEntityToDTO(pet));
+        }
+
+        return petDTOS;
     }
 
     @GetMapping("/owner/{ownerId}")
     public List<PetDTO> getPetsByOwner(@PathVariable long ownerId) {
-        return petService.getPetsByOwner(ownerId);
+        List<PetDTO> petDTOS = new ArrayList<>();
+        for (Pet pet: petService.getPetsByOwner(ownerId)) {
+            petDTOS.add(petEntityToDTO(pet));
+        }
+
+        return petDTOS;
+    }
+
+    /**
+     * Copy Pet DTO matching properties to Pet Entity
+     */
+    public Pet petDTOtoEntity(PetDTO petDTO) {
+        Pet pet = new Pet();
+        BeanUtils.copyProperties(petDTO, pet);
+        return pet;
+    }
+
+    /**
+     * Copy Pet Entity matching properties to Pet DTO
+     */
+    public PetDTO petEntityToDTO(Pet pet) {
+        PetDTO petDTO = new PetDTO();
+        BeanUtils.copyProperties(pet, petDTO);
+
+        /**
+         * As Pet DTO contains only Ids of Owner, we need to extract them from
+         * User and assign them to Pet DTO
+         */
+        petDTO.setOwnerId(pet.getUser().getId());
+        return petDTO;
     }
 }
