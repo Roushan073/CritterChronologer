@@ -49,7 +49,7 @@ public class CustomerService {
      */
     public Customer getOwnerByPet(long petId) {
         Pet pet = petService.getPetById(petId);
-        return getCustomerById(pet.getUser().getId());
+        return getCustomerById(pet.getCustomer().getId());
     }
 
     /**

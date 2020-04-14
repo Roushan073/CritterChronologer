@@ -79,9 +79,9 @@ public class PetController {
 
         /**
          * As Pet DTO contains only Ids of Owner, we need to extract them from
-         * User and assign them to Pet DTO
+         * Customer and assign them to Pet DTO
          */
-        petDTO.setOwnerId(pet.getUser().getId());
+        petDTO.setOwnerId(pet.getCustomer().getId());
         return petDTO;
     }
 }

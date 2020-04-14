@@ -10,7 +10,7 @@ public class PetDTO {
     private long id;
     private PetType type;
     private String name;
-    private long ownerId; // It shows Pet :: Customer (User) -> ManyToOne
+    private long ownerId; // It shows Pet :: Customer -> ManyToOne
     private LocalDate birthDate;
     private String notes;
 

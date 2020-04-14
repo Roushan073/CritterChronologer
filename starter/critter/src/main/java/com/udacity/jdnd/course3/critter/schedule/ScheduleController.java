@@ -1,8 +1,8 @@
 package com.udacity.jdnd.course3.critter.schedule;
 
+import com.udacity.jdnd.course3.critter.entity.Employee;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.entity.Schedule;
-import com.udacity.jdnd.course3.critter.entity.User;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.EmployeeService;
 import com.udacity.jdnd.course3.critter.service.PetService;
@@ -97,14 +97,14 @@ public class ScheduleController {
         List<Long> empIds = new ArrayList<>();
 
         /**
-         * As Schedule DTO contains only Ids of Pet and User, we need to extract them from
-         * User and Pet, and assign them to Schedule DTO
+         * As Schedule DTO contains only Ids of Pet and Employee, we need to extract them from
+         * Employee and Pet, and assign them to Schedule DTO
          */
         for(Pet pet: schedule.getPets()) {
             petIds.add(pet.getId());
         }
 
-        for(User employee: schedule.getUsers()) {
+        for(Employee employee: schedule.getEmployees()) {
             empIds.add(employee.getId());
         }
 

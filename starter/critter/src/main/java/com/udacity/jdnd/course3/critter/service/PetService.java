@@ -33,7 +33,7 @@ public class PetService {
         Customer customer = customerRepository.findCustomerById(ownerId);
 
         // Save Pet
-        pet.setUser(customer);
+        pet.setCustomer(customer);
         Long petId = petRepository.save(pet).getId();
 
         pet.setId(petId);

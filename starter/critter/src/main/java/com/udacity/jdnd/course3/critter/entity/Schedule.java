@@ -17,7 +17,7 @@ public class Schedule {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "schedules")
     @JsonIgnore
-    private List<User> users;
+    private List<Employee> employees;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "schedules")
     @JsonIgnore
@@ -44,12 +44,12 @@ public class Schedule {
         this.id = id;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public List<Employee> getEmployees() {
+        return employees;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
     }
 
     public List<Pet> getPets() {

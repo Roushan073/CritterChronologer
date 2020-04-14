@@ -19,9 +19,9 @@ public class Pet {
     private String notes;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "customer_id")
     @JsonIgnore
-    private User user;
+    private Customer customer;
 
     @ManyToMany
     @JoinTable(
@@ -54,12 +54,12 @@ public class Pet {
         this.name = name;
     }
 
-    public User getUser() {
-        return user;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public List<Schedule> getSchedules() {
