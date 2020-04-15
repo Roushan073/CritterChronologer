@@ -4,6 +4,7 @@ import com.udacity.jdnd.course3.critter.entity.Customer;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.entity.Schedule;
 import com.udacity.jdnd.course3.critter.repository.CustomerRepository;
+import com.udacity.jdnd.course3.critter.repository.PetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,9 @@ public class CustomerService {
     CustomerRepository customerRepository;
 
     @Autowired
+    PetRepository petRepository;
+
+    @Autowired
     PetService petService;
 
     /**
@@ -28,6 +32,33 @@ public class CustomerService {
      */
     public long saveCustomer(Customer customer) {
         return customerRepository.save(customer).getId();
+    }
+
+    /**
+     * Given a Customer with petId, create the Customer and return the Customer details
+     */
+    public long saveCustomerWithPet(Customer customer, List<Long> petIds) {
+        // These pet must not be associated with any customer
+        List<Pet> pets = new ArrayList<>();
+        for(long petId: petIds) {
+            Pet pet = petService.getPetById(petId);
+            if(pet == null) {
+                return 0;
+            }
+            pets.add(pet);
+        }
+
+        customer.setPets(pets);
+        //long customerId = customerRepository.save(customer).getId();
+
+        for(Pet pet: pets) {
+            pet.setCustomer(customer);
+            petRepository.save(pet);
+        }
+
+        long customerId = petService.getPetById(petIds.get(0)).getCustomer().getId();
+
+        return customerId;
     }
 
     /**

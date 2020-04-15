@@ -25,7 +25,7 @@ public class PetService {
     CustomerRepository customerRepository;
 
     /**
-     * Given a Pet, create the Pet and return the created Pet details
+     * Given a Pet with ownerId, create the Pet and return the created Pet details
      */
     public long savePet(Pet pet, long ownerId) {
 
@@ -56,6 +56,13 @@ public class PetService {
         customerRepository.save(customer);
 
         return petId;
+    }
+
+    /**
+     * Given a Pet with ownerId, create the Pet and return the created Pet details
+     */
+    public long savePetWithoutOwnerId(Pet pet) {
+        return petRepository.save(pet).getId();
     }
 
     /**

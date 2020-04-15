@@ -1,5 +1,7 @@
 package com.udacity.jdnd.course3.critter.entity;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Cascade.*;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;

@@ -18,7 +18,7 @@ public class Pet {
     private LocalDate birthDate;
     private String notes;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "customer_id")
     @JsonIgnore
     private Customer customer;

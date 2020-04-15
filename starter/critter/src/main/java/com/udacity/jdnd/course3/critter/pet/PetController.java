@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Handles web requests related to Pets.
@@ -22,11 +23,18 @@ public class PetController {
     @PostMapping
     public PetDTO savePet(@RequestBody PetDTO petDTO) {
         Pet reqPet = petDTOtoEntity(petDTO);
-        Long ownerId = petDTO.getOwnerId();
-        Long petId = petService.savePet(reqPet, ownerId);
-        if(petId == 0) {
-            return null;
+        long ownerId = petDTO.getOwnerId();
+        long petId;
+
+        if(ownerId == 0) {
+            petId = petService.savePetWithoutOwnerId(reqPet);
+        } else {
+            petId = petService.savePet(reqPet, ownerId);
+            if(petId == 0) {
+                return null;
+            }
         }
+
         petDTO.setId(petId);
         return petDTO;
     }

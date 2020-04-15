@@ -32,9 +32,20 @@ public class UserController {
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
         Customer customer = customerDTOtoEntity(customerDTO);
-        long customerId = customerService.saveCustomer(customer);
+        List<Long> petIds = Optional.ofNullable(customerDTO.getPetIds()).orElse(Collections.emptyList());
+
+        long customerId;
+
+        if(petIds.size() > 0) {
+            customerId = customerService.saveCustomerWithPet(customer, petIds);
+            if(customerId == 0) {
+                return null;
+            }
+        } else {
+            customerId = customerService.saveCustomer(customer);
+        }
+
         customerDTO.setId(customerId);
-        List<Long> petIds = new ArrayList<>();
         customerDTO.setPetIds(petIds);
         return customerDTO;
     }
@@ -168,8 +179,3 @@ public class UserController {
     }
 
 }
-
-// save pet without ownerId
-// assign pet to owner (update)
-// save customer with petId
-// findEmployeeForService -> what if either date or skills is passed and not both
