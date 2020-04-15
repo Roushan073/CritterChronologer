@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -111,8 +112,20 @@ public class UserController {
 
     @GetMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
+        LocalDate date = employeeDTO.getDate();
+        Set<EmployeeSkill> skills = employeeDTO.getSkills();
+        List<Employee> availableEmployees = new ArrayList<>();
+
+        if(date != null && skills != null) {
+            availableEmployees.addAll(employeeService.findEmployeesForService(date, skills));
+        } else if(date != null) {
+            availableEmployees.addAll(employeeService.findEmployeesForServiceByDate(date));
+        } else {
+            availableEmployees.addAll(employeeService.findEmployeesForServiceBySkills(skills));
+        }
+
         List<EmployeeDTO> employeeDTOS = new ArrayList<>();
-        for(Employee employee: employeeService.findEmployeesForService(employeeDTO)) {
+        for(Employee employee: availableEmployees) {
             employeeDTOS.add(employeeEntityToDTO(employee));
         }
         return employeeDTOS;
@@ -155,3 +168,8 @@ public class UserController {
     }
 
 }
+
+// save pet without ownerId
+// assign pet to owner (update)
+// save customer with petId
+// findEmployeeForService -> what if either date or skills is passed and not both
